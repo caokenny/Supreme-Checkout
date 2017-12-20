@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="SupremeBot">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/out/artifacts/SupremeBot_jar/SupremeBot.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

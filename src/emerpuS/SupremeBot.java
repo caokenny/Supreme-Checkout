@@ -6,6 +6,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,6 +24,23 @@ public class SupremeBot {
     SimpleDateFormat minutes = new SimpleDateFormat("mm");
     SimpleDateFormat seconds = new SimpleDateFormat("ss");
 
+    String link;
+    String name;
+    String email;
+    String phone;
+    String address;
+    String address2;
+    String zip;
+    String ccNumber;
+    String expMonth;
+    String expYear;
+    String cvv;
+    String itemName;
+    String itemColor;
+    String itemSize;
+
+    long delay;
+
     //Initialize XPaths for checkout page
     String[] elementXPaths = {"//*[@id=\"order_billing_name\"]",
             "//*[@id=\"order_email\"]",
@@ -32,7 +50,8 @@ public class SupremeBot {
             "//*[@id=\"order_billing_zip\"]",
             "//*[@id=\"cnb\"]",
             "//*[@id=\"vval\"]",
-            "//*[@id=\"header\"]/hgroup/time/b"};
+            "//*[@id=\"header\"]/hgroup/time/b",
+            "//*[@id=\"cvw\"]"};
 
     String[] monthXPaths = {"//*[@id=\"credit_card_month\"]/option[1]",
             "//*[@id=\"credit_card_month\"]/option[2]",
@@ -63,93 +82,29 @@ public class SupremeBot {
 
     public SupremeBot(String link, String name, String email, String phone, String address, String address2,
                       String zip, String ccNumber, String expMonth, String expYear, String cvv,
-                      String itemName, String itemColor, String itemSize) throws InterruptedException {
+                      String itemName, String itemColor, String itemSize) throws InterruptedException, IOException {
+        this.link = link;
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.address = address;
+        this.address2 = address2;
+        this.zip = zip;
+        this.ccNumber = ccNumber;
+        this.expMonth = expMonth;
+        this.expYear = expYear;
+        this.cvv = cvv;
+        this.itemName = itemName;
+        this.itemColor = itemColor;
+        this.itemSize = itemSize;
+
         browser = new ChromeDriver();   //Open Chrome
         wait = new WebDriverWait(browser, 5);   //Create WebDriverWait object
-        browser.get("http://www.supremenewyork.com/shop/all/accessories");  //Go to Supreme accessories page
-        wait.until(ExpectedConditions.elementToBeClickable(By.partialLinkText("Hanes")));   //Wait until Hanes is clickable
-        browser.findElementByPartialLinkText("Hanes").click();  //Click on Hanes
-        browser.get(browser.getCurrentUrl());   //Go to current URL, should be the Hanes item
-        wait.until(ExpectedConditions.elementToBeClickable(browser.findElementByXPath(
-                "//*[@id=\"add-remove-buttons\"]/input"))); //Wait until you can click add to cart
-        browser.findElementByXPath("//*[@id=\"add-remove-buttons\"]/input").click();    //Click add to cart
-        wait.until(ExpectedConditions.elementToBeClickable(browser.findElementByXPath("//*[@id=\"cart\"]/a[1]")));  //Wait until view cart is clickable
-        WebElement cart = browser.findElementByXPath("//*[@id=\"cart\"]/a[1]");
-        Actions openInNewTab = new Actions(browser);
-        openInNewTab.keyDown(Keys.CONTROL).click(cart).keyUp(Keys.CONTROL).perform();   //Open view cart in new tab
-        wait.until(ExpectedConditions.elementToBeClickable(browser.findElementByXPath("//*[@id=\"cart\"]/a[2]")));  //Wait until checkout is clickable
-        browser.findElementByXPath("//*[@id=\"cart\"]/a[2]").click();   //Click checkout
-        browser.get(browser.getCurrentUrl());   //Go to current page, should be checkout
-        //Set up elements to fill checkout page
-        WebElement nameElement = browser.findElementByXPath(elementXPaths[0]);
-        WebElement emailElement = browser.findElementByXPath(elementXPaths[1]);
-        WebElement phoneElement = browser.findElementByXPath(elementXPaths[2]);
-        WebElement addressElement = browser.findElementByXPath(elementXPaths[3]);
-        WebElement address2Element = browser.findElementByXPath(elementXPaths[4]);
-        WebElement zipElement = browser.findElementByXPath(elementXPaths[5]);
-        WebElement ccElement = browser.findElementByXPath(elementXPaths[6]);
-        //Fill in Billing Info
-        nameElement.clear();
-        nameElement.sendKeys(name);
-
-        emailElement.clear();
-        emailElement.sendKeys(email);
-
-        phoneElement.clear();
-        phoneElement.sendKeys(phone);
-
-        addressElement.clear();
-        addressElement.sendKeys(address);
-
-        address2Element.clear();
-        address2Element.sendKeys(address2);
-
-        zipElement.clear();
-        zipElement.sendKeys(zip);
-
-        ccElement.clear();
-        ccElement.sendKeys(ccNumber);
-
-
-
-        int i = 0;
-        while (true){
-            if (browser.findElementByXPath(monthXPaths[i]).getText().equals(expMonth)){
-                browser.findElementByXPath(monthXPaths[i]).click();
-                break;
-            }
-            else i++;
-        }
-
-        i = 0;
-        while (true){
-            if (browser.findElementByXPath(yearXPaths[i]).getText().equals(expYear)){
-                browser.findElementByXPath(yearXPaths[i]).click();
-                break;
-            }
-            else i++;
-        }
-
-        WebElement cvvElement = browser.findElementByXPath(elementXPaths[7]);
-
-        cvvElement.clear();
-        cvvElement.sendKeys(cvv);
-        cvvElement.sendKeys(Keys.TAB, Keys.SPACE);
-
-        ArrayList<String> windowTabs = new ArrayList<>(browser.getWindowHandles()); //Get window handles as strings in array list
-        lookForItem(itemName, itemColor, itemSize, link, windowTabs);   //Call lookForItem function
+        lookForItem();   //Call lookForItem function
     }
 
-    public void lookForItem(String itemName, String itemColor, String itemSize, String link, ArrayList<String> windowTabs) throws InterruptedException {
+    public void lookForItem() throws InterruptedException {
         int x = 0;
-        browser.switchTo().window(windowTabs.get(1));   //Switch to second tab
-        browser.get(browser.getCurrentUrl());   //Go to current URL, should be cart
-        wait.until(ExpectedConditions.elementToBeClickable(By.tagName("button")));  //Wait until remove is clickable
-        browser.findElementByTagName("button").click(); //Click remove
-        //DOUBLE CHECK REMOVE WAS ACTUALLY CLICKED
-        if (browser.findElementByTagName("button").isDisplayed()) {
-            browser.findElementByTagName("button").click();
-        }
         browser.get("http://www.supremenewyork.com/shop/all/" + link);  //Go to the page of the item category
         try {
             Thread.sleep(getTime());    //Get time until drop and make program sleep until then
@@ -180,21 +135,15 @@ public class SupremeBot {
                 }
                 break;
                 //If can't find element then refresh page until found
-            } catch (ElementNotVisibleException enve){
-                browser.navigate().refresh();
-                continue;
-            } catch (ElementNotInteractableException enie){
-                browser.navigate().refresh();
-                continue;
-            } catch (ElementNotSelectableException ense){
+            } catch (Exception e){
                 browser.navigate().refresh();
                 continue;
             }
         }
-        checkoutItem(itemSize, windowTabs); //Call checkOutItem function
+        checkoutItem(); //Call checkOutItem function
     }
 
-    public void checkoutItem(String itemSize, ArrayList<String> windowTabs){
+    public void checkoutItem() throws InterruptedException {
         browser.get(browser.getCurrentUrl());   //Get current URL, should be page of item wanted
         try {
             List<WebElement> sizes = browser.findElementsByTagName("option");   //Look for sizes
@@ -208,7 +157,69 @@ public class SupremeBot {
             System.out.println("Sizes not available");  //If no sizes found, print no sizes
         }
         browser.findElementByName("commit").click();    //Click add to cart
-        browser.switchTo().window(windowTabs.get(0));   //Switch to checkout tab
+        wait.until(ExpectedConditions.elementToBeClickable(browser.findElementByXPath("//*[@id=\"cart\"]/a[2]")));  //Wait until checkout is clickable
+        browser.findElementByXPath("//*[@id=\"cart\"]/a[2]").click();
+
+        browser.get(browser.getCurrentUrl());   //Go to current page, should be checkout
+        //Set up elements to fill checkout page
+        WebElement nameElement = browser.findElementByXPath(elementXPaths[0]);
+        WebElement emailElement = browser.findElementByXPath(elementXPaths[1]);
+        WebElement phoneElement = browser.findElementByXPath(elementXPaths[2]);
+        WebElement addressElement = browser.findElementByXPath(elementXPaths[3]);
+        WebElement address2Element = browser.findElementByXPath(elementXPaths[4]);
+        WebElement zipElement = browser.findElementByXPath(elementXPaths[5]);
+        WebElement ccElement = browser.findElementByXPath(elementXPaths[6]);
+        //Fill in Billing Info
+        nameElement.clear();
+        nameElement.sendKeys(name);
+        emailElement.clear();
+        emailElement.sendKeys(email);
+        phoneElement.clear();
+        phoneElement.sendKeys(phone);
+        addressElement.clear();
+        addressElement.sendKeys(address);
+        address2Element.clear();
+        address2Element.sendKeys(address2);
+        zipElement.clear();
+        zipElement.sendKeys(zip);
+        ccElement.clear();
+        ccElement.sendKeys(ccNumber);
+
+        int i = 0;
+        while (true){
+            if (browser.findElementByXPath(monthXPaths[i]).getText().equals(expMonth)){
+                browser.findElementByXPath(monthXPaths[i]).click();
+                break;
+            }
+            else i++;
+        }
+
+        i = 0;
+        while (true){
+            if (browser.findElementByXPath(yearXPaths[i]).getText().equals(expYear)){
+                browser.findElementByXPath(yearXPaths[i]).click();
+                break;
+            }
+            else i++;
+        }
+
+        try {
+            WebElement cvvElement = browser.findElementByXPath(elementXPaths[7]);
+
+            cvvElement.clear();
+            cvvElement.sendKeys(cvv);
+            cvvElement.sendKeys(Keys.TAB, Keys.SPACE);
+        } catch (Exception e){
+            try {
+                WebElement cvvElement = browser.findElementByXPath(elementXPaths[9]);
+
+                cvvElement.clear();
+                cvvElement.sendKeys(cvv);
+                cvvElement.sendKeys(Keys.TAB, Keys.SPACE);
+            } catch (Exception e2){
+                ccElement.sendKeys(Keys.TAB, Keys.TAB, Keys.TAB, cvv, Keys.TAB, Keys.SPACE);
+            }
+        }
         browser.findElementByXPath(elementXPaths[0]).submit();  //Submit form
     }
 
@@ -219,6 +230,6 @@ public class SupremeBot {
         returnThis += TimeUnit.SECONDS.toMillis(Integer.parseInt(seconds.format(calendar.getTime())));  //Get seconds, convert to MILLISECONDS
         returnThis = elevenAMMilliSecs - returnThis;    //Add up all MILLISECONDS and subtract from 11 hours MILLISECONDS
         System.out.printf("Sleeping for %d minutes.", TimeUnit.MILLISECONDS.toMinutes(returnThis)); //Print how long we sleep for
-        return returnThis;  //Return MILLISECONDS
+        return returnThis - 5000;  //Return MILLISECONDS
     }
 }

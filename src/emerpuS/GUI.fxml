@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.text.*?>
-<?import javafx.scene.*?>
 <?import javafx.geometry.*?>
-<?import javafx.scene.effect.*?>
-<?import java.lang.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="emerpuS.Controller">
+<TabPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="550.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="emerpuS.Controller">
   <tabs>
     <Tab text="Account Details">
       <content>
@@ -45,7 +41,7 @@
                   <TextField fx:id="expYear" layoutX="102.0" layoutY="375.0" prefWidth="465.0" />
                   <Label layoutX="68.0" layoutY="409.0" text="CVV: " />
                   <TextField fx:id="cvv" layoutX="102.0" layoutY="405.0" prefWidth="465.0" />
-                  <Button layoutX="274.0" layoutY="435.0" mnemonicParsing="false" onMouseClicked="#startButtonClicked" text="Start" />
+                  <Button layoutX="274.0" layoutY="439.0" mnemonicParsing="false" onMouseClicked="#startButtonClicked" text="Start" />
                </children>
             </AnchorPane>
       </content>
